@@ -1,0 +1,17 @@
+- Install python3.6+
+- Install pip3
+- pip3 install -r requirements.txt # If your default python is python2 try `python3 -m pip install -r requirements.txt` instead.
+- Note that the Makefile needs python3 and pylint to be in your PATH to function correctly. You may need to do something to make that true.
+- Add a bot at https://discordapp.com/developers/applications/me
+- Add a bot user for the bot
+- Add the bot to your server with https://discordapp.com/oauth2/authorize?client_id=<your client id here>&scope=bot
+- Click to reveal the token (not secret) on https://discordapp.com/developers/applications/me
+- Copy config.json.example to config.json and alter the value for "token" to this value
+- Optionally take a look at configuration.py and enter any required non-default information into config.json.
+- Using the values from your config.json issue the following commands in MySQL (you don't need to create the databases):
+  -- CREATE USER '<mysql_user>'@'<mysql_host>' IDENTIFIED BY '<mysql_password>';
+  -- GRANT ALL ON <decksite_database>.* TO '<mysql_user>'@'<mysql_host>';
+  -- GRANT ALL ON <prices_database>.* TO '<mysql_user>'@'<mysql_host>';
+  -- GRANT ALL ON <magic_database>.* TO '<mysql_user>'@'<mysql_host>';
+  -- GRANT ALL ON <logsite_database>.* TO <mysql_user>'@'<mysql_host>';
+- Some very minor parts of the bot (the "modofail" command) use libopus and ffmpeg which are not in pip and must be installed in a your-OS-specific way separately. Very optional.
