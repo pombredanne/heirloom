@@ -1,16 +1,36 @@
 """Functions used by the fetch module"""
 
 # Standard library imports
-import urllib.request
-from typing import Optional
+import time
+import logging as logger
+from typing import Dict, Optional
 
 # Third party imports
+import requests
+from requests.exceptions import HTTPError, Timeout
+from bs4 import BeautifulSoup
 
-# Local application imports
+# Constants
+DEFAULT_DELAY = 3
+DEFAULT_RETRIES = 10
 
-def fetch(url: str, character_encoding: Optional[str] = None) -> str:
-    """Download an url"""
-    return urllib.request.urlopen(url).read().decode(character_encoding)
+def fetch(url: str, retries: Optional[int] = DEFAULT_RETRIES) -> Dict:
+    """Download an url handling errors"""
+    resp = None
+    try:
+        logger.info('Downloading: %s', url)
+        resp = requests.get(url)
+        resp.raise_for_status()
+        code = resp.status_code
+    except (HTTPError, Timeout):
+        logger.exception("Couldn't download: %s", url)
+        return None
+    if retries > 0 and 500 <= code < 600: # Server error
+        logger.info('Retrying download')
+        time.sleep(DEFAULT_DELAY)
+        return fetch(url, retries-1)
+    return resp
+
 #def unzip(url: str, path: str) -> str:
 #    pass
 #

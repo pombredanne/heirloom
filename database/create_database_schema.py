@@ -1,18 +1,18 @@
 """Create database schema"""
 
 # Third party imports
-from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, text
+from sqlalchemy import engine_from_config, Column, Integer, String, \
+        Float, ForeignKey, text
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy.engine.url import URL
 from sqlalchemy.ext.declarative import declarative_base
 
 # Local application imports
-from database import database_helper
 DeclarativeBase = declarative_base()
+import config
+
+engine = engine_from_config(config.DATABASE, prefix='db.')
 
 def create_database_schema():
-    engine = database_helper.db_connect()
-
     sql = text('CREATE TABLE version (version TEXT)')
     result = engine.execute(sql)
     DeclarativeBase.metadata.create_all(engine)
@@ -45,6 +45,9 @@ class Card(DeclarativeBase):
     toughness = Column(String)
     loyalty = Column(String)
     image_name = Column(String)
+    tix = Column(Float)
+    usd = Column(Float)
+    eur = Column(Float)
 
 class Color(DeclarativeBase):
     __tablename__ = 'color'
