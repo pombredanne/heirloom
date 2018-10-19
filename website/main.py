@@ -4,43 +4,50 @@ from datetime import datetime
 from flask import Flask, render_template, session, redirect, url_for, flash, request
 from flask_bootstrap import Bootstrap
 from flask_moment import Moment
-from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import engine_from_config
+from sqlalchemy.orm import scoped_session, sessionmaker
+from sqlalchemy.ext.declarative import declarative_base
 
 from website.forms import SearchForm
-import config
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'SjdnUends821Jsdlkvxh391ksdODnejdDw'
-app.config['SQLALCHEMY_DATABASE_URI'] = \
-    'sqlite:///' + os.path.join(config.ROOT_DIR, 'oracle.sqlite')
-app.config['SQLALCHEMY_COMMIT_ON_TEARDOWN'] = True
+app.config['SECRET_KEY'] = 'SjdnUends821Jsdlkvxh391ksdODnejdDw' # required for wtforms
 Bootstrap(app)
 moment = Moment(app)
-db = SQLAlchemy(app)
+
+import config
+engine = engine_from_config(config.DATABASE, prefix='db.')
+db_session = scoped_session(sessionmaker(autocommit=False,
+                                         autoflush=False,
+                                         bind=engine))
+Base = declarative_base()
+Base.query = db_session.query_property()
+
 from website.models import Card # Circular import
 
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/index', methods=['GET', 'POST'])
 def index():
     search_form = SearchForm(request.form)
-    #if request.method == 'POST':
-    #return search_results(search_form)
+
     search_string = search_form.data['search']
-    results = Card.query.filter_by(name=search_string).first()
-    #return render_template('home.html', form=search_form, results=results)
-    return results
+    if search_string != '' and request.method == 'POST':
+        return search_results(search_form)
+    #results = Card.query.filter(Card.name.like("%isperia%")).first()
+    #return render_template('index.html', results=results)
+    return render_template('search.html', form=search_form)
 
 @app.route('/results')
 def search_results(search):
     results = []
     search_string = search.data['search']
     if search_string != '':
-        results = Card.query.filter_by(name=search_string).all()
+        results = Card.query.filter(Card.name.like('%'+search_string+'%')).all()
     if not results:
         flash('No results found!')
         return redirect('/')
     # display results
-    return render_template('results.html', results=results)
+    return render_template('index.html', results=results)
 
 @app.route('/user/<name>')
 def user(name):

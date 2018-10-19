@@ -7,15 +7,15 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 
 # Local application imports
-DeclarativeBase = declarative_base()
-import config
+Base = declarative_base()
 
+import config
 engine = engine_from_config(config.DATABASE, prefix='db.')
 
 def create_database_schema():
     sql = text('CREATE TABLE version (version TEXT)')
     result = engine.execute(sql)
-    DeclarativeBase.metadata.create_all(engine)
+    Base.metadata.create_all(engine)
     Session = sessionmaker(bind=engine)
     session = Session()
     session.add_all([Color(name='White', symbol='W'),
@@ -31,7 +31,7 @@ def create_database_schema():
     session.commit()
     session.close()
 
-class Card(DeclarativeBase):
+class Card(Base):
     __tablename__ = 'card'
 
     id = Column(Integer, primary_key=True)
@@ -49,49 +49,49 @@ class Card(DeclarativeBase):
     usd = Column(Float)
     eur = Column(Float)
 
-class Color(DeclarativeBase):
+class Color(Base):
     __tablename__ = 'color'
 
     id = Column(Integer, primary_key=True)
     name = Column(String)
     symbol = Column(String)
 
-class CardColor(DeclarativeBase):
+class CardColor(Base):
     __tablename__ = 'card_color'
 
     id = Column(Integer, primary_key=True)
     card_id = Column(Integer, ForeignKey('card.id'))
     color_id = Column(Integer, ForeignKey('color.id'))
 
-class CardColorIdentity(DeclarativeBase):
+class CardColorIdentity(Base):
     __tablename__ = 'card_color_identity'
 
     id = Column(Integer, primary_key=True)
     card_id = Column(Integer, ForeignKey('card.id'))
     color_id = Column(Integer, ForeignKey('color.id'))
 
-class CardSupertype(DeclarativeBase):
+class CardSupertype(Base):
     __tablename__ = 'card_supertype'
 
     id = Column(Integer, primary_key=True)
     card_id = Column(Integer, ForeignKey('card.id'))
     supertype = Column(String, nullable=False)
 
-class CardType(DeclarativeBase):
+class CardType(Base):
     __tablename__ = 'card_type'
 
     id = Column(Integer, primary_key=True)
     card_id = Column(Integer, ForeignKey('card.id'))
     type = Column(String, nullable=False)
 
-class CardSubtype(DeclarativeBase):
+class CardSubtype(Base):
     __tablename__ = 'card_subtype'
 
     id = Column(Integer, primary_key=True)
     card_id = Column(Integer, ForeignKey('card.id'))
     subtype = Column(String, nullable=False)
 
-class Rarity(DeclarativeBase):
+class Rarity(Base):
     __tablename__ = 'rarity'
 
     id = Column(Integer, primary_key=True)

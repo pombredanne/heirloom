@@ -6,14 +6,5 @@
     <style></style>
 {% endblock head %}
 {% block page_content %}
-  <div class="page-header">
-    <form style="display: inline;" method="post" name="search">
-      {{ form.select }}
-      {{ form.search(size=20) }}
-      <input type="submit" value="Search">
-    </form>
-
-    {{ results }}
-  </div>
   {{ wtf.quick_form(form) }}
 {% endblock page_content %}
