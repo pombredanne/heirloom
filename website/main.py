@@ -28,26 +28,22 @@ from website.models import Card # Circular import
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/index', methods=['GET', 'POST'])
 def index():
-    search_form = SearchForm(request.form)
-
-    search_string = search_form.data['search']
-    if search_string != '' and request.method == 'POST':
-        return search_results(search_form)
-    #results = Card.query.filter(Card.name.like("%isperia%")).first()
-    #return render_template('index.html', results=results)
-    return render_template('search.html', form=search_form)
-
-@app.route('/results')
-def search_results(search):
     results = []
-    search_string = search.data['search']
-    if search_string != '':
-        results = Card.query.filter(Card.name.like('%'+search_string+'%')).all()
+    form = SearchForm(request.form)
+    query = form.data['search']
+    if query != '' and request.method == 'POST':
+        return redirect(url_for('search_results', query=query))
+    return render_template('index.html', form=form, query=query, results=results)
+
+@app.route('/search/<query>', methods=['GET', 'POST'])
+def search_results(query):
+    results = []
+    form = SearchForm(request.form)
+    results = Card.query.filter(Card.name.like('%'+query+'%')).all()
     if not results:
         flash('No results found!')
-        return redirect('/')
-    # display results
-    return render_template('index.html', results=results)
+        return redirect(url_for('index'))
+    return render_template('search.html', form=form, query=query, results=results)
 
 @app.route('/user/<name>')
 def user(name):

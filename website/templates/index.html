@@ -7,6 +7,14 @@
 {% endblock head %}
 {% block page_content %}
 <div class="page-header">
-  {{ results }}
+  <form style="display: inline;" method="post" name="search">
+    {{ form.search(size=20) }}
+    <input type="submit" value="Search">
+  </form>
+
+  {% if results %}
+    <h1>Search results for "{{ query }}":</h1>
+    {{ results }}
+  {% endif %}
 </div>
 {% endblock page_content %}
