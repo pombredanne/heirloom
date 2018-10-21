@@ -7,27 +7,27 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 
 # Local application imports
-Base = declarative_base()
-
 import config
+
+Base = declarative_base()
 engine = engine_from_config(config.DATABASE, prefix='db.')
 
 def create_database_schema():
     sql = text('CREATE TABLE version (version TEXT)')
-    result = engine.execute(sql)
+    engine.execute(sql)
     Base.metadata.create_all(engine)
     Session = sessionmaker(bind=engine)
     session = Session()
     session.add_all([Color(name='White', symbol='W'),
-        Color(name='Blue', symbol='U'),
-        Color(name='Black', symbol='B'),
-        Color(name='Red', symbol='R'),
-        Color(name='Green', symbol='G')])
+                     Color(name='Blue', symbol='U'),
+                     Color(name='Black', symbol='B'),
+                     Color(name='Red', symbol='R'),
+                     Color(name='Green', symbol='G')])
     session.add_all([Rarity(name='Common'),
-        Rarity(name='Uncommon'),
-        Rarity(name='Rare'),
-        Rarity(name='Mythic Rare'),
-        Rarity(name='Special')])
+                     Rarity(name='Uncommon'),
+                     Rarity(name='Rare'),
+                     Rarity(name='Mythic Rare'),
+                     Rarity(name='Special')])
     session.commit()
     session.close()
 

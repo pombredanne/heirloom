@@ -1,20 +1,19 @@
 """Database functions"""
 # Standard library imports
-import re
+import collections, re
 import logging as logger
-logger.basicConfig(level=logger.INFO)
+from typing import Dict
 
 # Third party imports
-from typing import Dict
-from sqlalchemy import exc, create_engine, text, engine_from_config
-from sqlalchemy.engine.url import URL
+from sqlalchemy import engine_from_config, exc
 from sqlalchemy_utils.functions import drop_database, database_exists
 
 # Local application imports
-from database import create_database_schema
+from database import schema
 import shared.fetch as fetch
 import config
 
+logger.basicConfig(level=logger.INFO)
 engine = engine_from_config(config.DATABASE, prefix='db.')
 
 def update_database(new_version: str):
@@ -25,7 +24,7 @@ def update_database(new_version: str):
     if database_exists(config.DATABASE['db.url']):
         drop_database(engine.url)
 
-    create_database_schema.create_database_schema()
+    schema.create_database_schema()
     cards = fetch.all_cards()
     for name, card in cards.items():
         insert_card(name, card)
@@ -60,6 +59,19 @@ def insert_card(name: str, card: Dict) -> None:
         db_connection.execute('INSERT INTO card_subtype (card_id, subtype) VALUES (?, ?)', [card_id, subtype])
     db_connection.close()
 
+def select_all_cards(db_connection):
+    sql = 'SELECT ' + ', '.join(property for property in properties()) \
+        + ' FROM card'
+    rows = db_connection.execute(sql)
+    return [Card(*row) for row in rows]
+
+def query(db_connection, query):
+    sql = 'SELECT ' + ', '.join(property for property in properties()) \
+        + ' FROM card' \
+        + ' WHERE name LIKE ?'
+    rows = db_connection.execute(sql, ['%' + query + '%'])
+    return [Card(*row) for row in rows]
+
 def get_value(db_connection, cardname, column):
     sql = "SELECT {0} FROM card WHERE card.name=?".format(column)
     row = db_connection.execute(sql, (cardname,)).first()
@@ -78,14 +90,18 @@ def underscore2camel(s):
 
 def properties():
     return {
-      'layout': 'TEXT',
-      'name': 'TEXT',
-      'mana_cost': 'TEXT',
-      'cmc': 'REAL',
-      'type': 'TEXT',
-      'text': 'TEXT',
-      'power': 'TEXT',
-      'toughness': 'TEXT',
-      'loyalty': 'TEXT',
-      'image_name': 'TEXT',
-}
+        'layout': 'TEXT',
+        'name': 'TEXT',
+        'mana_cost': 'TEXT',
+        'cmc': 'REAL',
+        'type': 'TEXT',
+        'text': 'TEXT',
+        'power': 'TEXT',
+        'toughness': 'TEXT',
+        'loyalty': 'TEXT',
+        'image_name': 'TEXT',
+        'usd': 'FLOAT',
+        'tix': 'FLOAT'
+    }
+
+Card = collections.namedtuple('Card', properties().keys())

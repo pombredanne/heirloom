@@ -10,7 +10,7 @@ from requests_html import HTMLSession
 
 # Local application imports
 from shared.fetch_internal import fetch
-from database import database_helper
+from database import helper
 import config
 
 engine = engine_from_config(config.DATABASE, prefix='db.')
@@ -65,10 +65,10 @@ def update_prices(web, marker: str) -> None:
 def save_price_database(db_connection, cardname, price, currency) -> None:
     """Save card price in database"""
     try:
-        current_price = database_helper.get_value(db_connection, cardname, currency)
+        current_price = helper.get_value(db_connection, cardname, currency)
 
         if current_price is None or price < current_price:
-            database_helper.update_column(db_connection, cardname, currency, price)
+            helper.update_column(db_connection, cardname, currency, price)
     except:
         traceback.print_exc()
         logger.error("Couldn't get current price for %s", cardname)
