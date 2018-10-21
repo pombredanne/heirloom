@@ -1,3 +1,5 @@
+body { font-weight: 500 } /* TODO: add weight to the text*/
+th, td { padding: 5px 6px 5px 6px }
 tr:nth-child(odd):hover { background: #FCFAF2 }
-tr:nth-child(even) { background: #DDD }
+tr:nth-child(even) { background: #EEE }
 tr:nth-child(even):hover { background: #F3F2EC }
