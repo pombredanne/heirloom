@@ -4,6 +4,7 @@ from datetime import datetime
 from flask import Flask, render_template, session, redirect, url_for, flash, request
 from flask_bootstrap import Bootstrap
 from flask_moment import Moment
+from flask_table import Table, Col
 from sqlalchemy import engine_from_config
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
@@ -25,15 +26,32 @@ Base.query = db_session.query_property()
 
 from website.models import Card # Circular import
 
+class ItemTable(Table):
+    name = Col('NAME')
+    mana_cost = Col('COST')
+    usd = Col('USD')
+    tix = Col('TIX')
+
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/index', methods=['GET', 'POST'])
 def index():
     form = SearchForm()
-    query = form.data['search']
+    query = form.data['q']
     if query != '':
-        results = Card.query.filter(Card.name.like('%'+query+'%')).all()
-        return render_template('index.html', form=form, query=query, results=results)
+        items = Card.query.filter(Card.name.like('%'+query+'%')).all()
+        table = ItemTable(items)
+        return render_template('index.html', form=form, query=query, table=table)
     return render_template('index.html', form=form)
+
+@app.route('/search', methods=['GET'])
+def search():
+    form = SearchForm(request.args)
+    query = request.args.get('q', None)
+    table = None
+    if query is not None:
+        items = Card.query.filter(Card.name.like('%'+query+'%')).all()
+        table = ItemTable(items)
+    return render_template('index.html', form=form, query=query, table=table)
 
 @app.route('/user/<name>')
 def user(name):

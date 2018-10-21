@@ -1,0 +1,3 @@
+tr:nth-child(odd):hover { background: #FCFAF2 }
+tr:nth-child(even) { background: #DDD }
+tr:nth-child(even):hover { background: #F3F2EC }

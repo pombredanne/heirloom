@@ -8,13 +8,13 @@
 {% block page_content %}
 <div class="page-header">
   <form style="display: inline;" action="{{ url_for('index') }}" method="post" name="search">
-    {{ form.search(size=20) }}
+    {{ form.q(size=20) }}
     <input type="submit" value="Search">
   </form>
 
-  {% if results %}
+  {% if table %}
     <h1>Search results for "{{ query }}":</h1>
-    {{ results }}
+    {{ table }}
   {% endif %}
 </div>
 {% endblock page_content %}
