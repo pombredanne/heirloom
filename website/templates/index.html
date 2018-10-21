@@ -7,7 +7,7 @@
 {% endblock head %}
 {% block page_content %}
 <div class="page-header">
-  <form style="display: inline;" action="{{ url_for('index') }}" method="post" name="search">
+  <form style="display: inline;" action="{{ url_for('search') }}" method="get" name="search">
     {{ form.q(size=20) }}
     <input type="submit" value="Search">
   </form>

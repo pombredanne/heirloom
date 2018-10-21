@@ -35,13 +35,13 @@ class ItemTable(Table):
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/index', methods=['GET', 'POST'])
 def index():
-    form = SearchForm()
+    form = SearchForm(request.args)
     query = form.data['q']
-    if query != '':
+    table = None
+    if query is not None:
         items = Card.query.filter(Card.name.like('%'+query+'%')).all()
         table = ItemTable(items)
-        return render_template('index.html', form=form, query=query, table=table)
-    return render_template('index.html', form=form)
+    return render_template('index.html', form=form, query=query, table=table)
 
 @app.route('/search', methods=['GET'])
 def search():
