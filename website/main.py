@@ -28,22 +28,12 @@ from website.models import Card # Circular import
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/index', methods=['GET', 'POST'])
 def index():
-    results = []
-    form = SearchForm(request.form)
+    form = SearchForm()
     query = form.data['search']
-    if query != '' and request.method == 'POST':
-        return redirect(url_for('search_results', query=query))
-    return render_template('index.html', form=form, query=query, results=results)
-
-@app.route('/search/<query>', methods=['GET', 'POST'])
-def search_results(query):
-    results = []
-    form = SearchForm(request.form)
-    results = Card.query.filter(Card.name.like('%'+query+'%')).all()
-    if not results:
-        flash('No results found!')
-        return redirect(url_for('index'))
-    return render_template('search.html', form=form, query=query, results=results)
+    if query != '':
+        results = Card.query.filter(Card.name.like('%'+query+'%')).all()
+        return render_template('index.html', form=form, query=query, results=results)
+    return render_template('index.html', form=form)
 
 @app.route('/user/<name>')
 def user(name):

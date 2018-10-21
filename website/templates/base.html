@@ -1,6 +1,6 @@
 {% extends "bootstrap/base.html" %}
 
-{% block title %}Flasky{% endblock title %}
+{% block title %}Heirloom{% endblock title %}
 {% block head %}
 {{ super() }}
 <link rel="shortcut-icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
@@ -18,7 +18,7 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="/">Flasky</a>
+      <a class="navbar-brand" href="/">Heirloom</a>
     </div>
     <div class="navbar-collapse collapse" >
       <ul class="nav navbar-nav">
@@ -45,5 +45,4 @@
 {% block scripts %}
 {{ super() }}
 {{ moment.include_moment() }}
-{#{ moment.lang('es') }#}
 {% endblock scripts %}
