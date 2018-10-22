@@ -1,9 +1,10 @@
 """Functions used by the fetch module"""
 
 # Standard library imports
+import json
 import time
 import logging as logger
-from typing import Dict, Optional
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 # Third party imports
 import requests
@@ -14,7 +15,7 @@ from bs4 import BeautifulSoup
 DEFAULT_DELAY = 3
 DEFAULT_RETRIES = 10
 
-def fetch(url: str, retries: Optional[int] = DEFAULT_RETRIES) -> Dict:
+def download(url: str, retries: Optional[int] = DEFAULT_RETRIES) -> Dict:
     """Download an url handling errors"""
     resp = None
     try:
@@ -25,11 +26,24 @@ def fetch(url: str, retries: Optional[int] = DEFAULT_RETRIES) -> Dict:
     except (HTTPError, Timeout):
         logger.exception("Couldn't download: %s", url)
         return None
-    if retries > 0 and 500 <= code < 600: # Server error
-        logger.info('Retrying download')
-        time.sleep(DEFAULT_DELAY)
-        return fetch(url, retries-1)
-    return resp
+    try:
+        if retries and int(retries) > 0 and code and 500 <= int(code) < 600: # Server error
+            logger.info('Retrying download')
+            time.sleep(DEFAULT_DELAY)
+            return download(url, retries-1)
+    except:
+        pass
+    return resp.content
+
+def fetch_json(url: str, character_encoding: str = None) -> Any:
+    try:
+        blob = download(url, character_encoding)
+        if blob:
+            return json.loads(blob)
+        return None
+    except json.decoder.JSONDecodeError:
+        print('Failed to load JSON:\n{0}'.format(blob))
+        raise
 
 #def unzip(url: str, path: str) -> str:
 #    pass

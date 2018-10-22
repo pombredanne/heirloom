@@ -1,4 +1,5 @@
 # Standard library imports
+import re
 import json
 
 # Third party imports
@@ -8,11 +9,11 @@ from pkg_resources import parse_version
 # Local application imports
 #from database.create_database_schema import Card
 from database.card_description import CardDescription
-from shared.fetch_internal import fetch
+import shared.fetch_internal as internal
 
 def all_cards() -> Dict:
-    #return json.load(internal.fetch('https://mtgjson.com/json/AllCards.json', 'utf-8'))I
-    return json.load(open('AllCards.json'))
+    return internal.fetch_json('https://mtgjson.com/json/AllCards.json', 'utf-8')
+    #return json.load(open('AllCards.json'))
 
 def all_sets() -> Dict[str, Dict[str, Any]]:
     pass
@@ -36,7 +37,8 @@ def legal_cards(force: bool = False, season: str = None) -> List[str]:
     pass
 
 def mtgjson_version() -> str:
-    return parse_version(json.loads(internal.fetch('https://mtgjson.com/json/version.json')))
+    version = parse_version(internal.fetch_json('https://mtgjson.com/json/version.json'))
+    return str(version)
 
 async def mtgo_status() -> str:
     pass

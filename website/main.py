@@ -46,10 +46,14 @@ def index():
 @app.route('/search', methods=['GET'])
 def search():
     form = SearchForm(request.args)
+    select = form.select.data
     query = request.args.get('q', None)
     table = None
     if query is not None:
-        items = Card.query.filter(Card.name.like('%'+query+'%')).all()
+        if select == 'Heirloom':
+            items = Card.query.filter(Card.name.like('%'+query+'%')).filter(Card.heirloom_legal == 1).all()
+        else:
+            items = Card.query.filter(Card.name.like('%'+query+'%')).all()
         table = ItemTable(items)
     return render_template('index.html', form=form, query=query, table=table)
 

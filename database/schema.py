@@ -1,4 +1,5 @@
 """Create database schema"""
+import logging
 
 # Third party imports
 from sqlalchemy import engine_from_config, Column, Integer, String, \
@@ -9,8 +10,13 @@ from sqlalchemy.ext.declarative import declarative_base
 # Local application imports
 import config
 
+logging.basicConfig(level=config.LOGGER['level'])
+logger = logging.getLogger(__name__)
 Base = declarative_base()
 engine = engine_from_config(config.DATABASE, prefix='db.')
+
+def layouts():
+    return ['normal', 'meld', 'split', 'phenomenon', 'token', 'vanguard', 'double-faced', 'plane', 'flip', 'scheme', 'leveler']
 
 def create_database_schema():
     sql = text('CREATE TABLE version (version TEXT)')
@@ -45,6 +51,7 @@ class Card(Base):
     toughness = Column(String)
     loyalty = Column(String)
     image_name = Column(String)
+    heirloom_legal = Column(Integer)
     tix = Column(Float)
     usd = Column(Float)
     eur = Column(Float)

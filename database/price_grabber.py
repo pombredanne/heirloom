@@ -5,11 +5,9 @@ import logging as logger
 
 # Third party imports
 from sqlalchemy import engine_from_config
-from sqlalchemy.sql import select
 from requests_html import HTMLSession
 
 # Local application imports
-from shared.fetch_internal import fetch
 from database import helper
 import config
 
@@ -67,8 +65,10 @@ def save_price_database(db_connection, cardname, price, currency) -> None:
     try:
         current_price = helper.get_value(db_connection, cardname, currency)
 
+        logger.info('Current price: %s, Price: %s', current_price, price)
         if current_price is None or price < current_price:
             helper.update_column(db_connection, cardname, currency, price)
+            logger.info('\nChanging price from %s to %s', current_price, price)
     except:
         traceback.print_exc()
         logger.error("Couldn't get current price for %s", cardname)

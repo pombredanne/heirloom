@@ -17,12 +17,13 @@ class Card(Base):
     toughness = Column(String)
     loyalty = Column(String)
     image_name = Column(String)
+    heirloom_legal = Column(Integer)
     tix = Column(Float)
     usd = Column(Float)
     eur = Column(Float)
 
     def __repr__(self):
-        return '<Card %s>' % (self.name)
+        return "Card ('name'=%s, 'heirloom_legal'=%s)" % (self.name, self.heirloom_legal)
 
 class Color(Base):
     __tablename__ = 'color'
